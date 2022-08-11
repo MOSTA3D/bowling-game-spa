@@ -9,7 +9,7 @@ class Player {
 
     constructor(name:string){
         this.name = name;
-        for(let i = 0; i < 20; i++){
+        for(let i = 0; i < 22; i++){
             this.rollsScore.push(-1);
         }
         this.currentRoll = 0;
@@ -30,6 +30,7 @@ function Game(){
     })) as Player[]);
     const [isSecondRoll, setIsSecondRoll] = useState(false);
     const [disableSubmit, setDisableSubmit] = useState(true);
+    const [displayExtra, setDisplayExtra] = useState(false);
 
 
     // handlers
@@ -45,7 +46,13 @@ function Game(){
         }else{
             setDisableNext(true);
         }
-        setInputScore(e.target.value);
+
+        if(tgtVal + players.current[role].rollsScore[currentRoll - 1] === 10){
+            setDisableNext(false);
+            setDisableSubmit(true);
+        }
+
+        setInputScore(tgtVal);
     }
 
     const handleNextClick = ()=>{
@@ -53,19 +60,31 @@ function Game(){
             return;
         }
 
-        if(role === (players.current.length - 1) && currentRoll === (rollsScore.length - 2) && in){
+        if(role === (players.current.length - 1) && currentRoll === (rollsScore.length - 2) && inputScore !== 10){
             setDisableNext(true);
             setDisableSubmit(false);
         }
+
 
         players.current[role].rollsScore[currentRoll] = inputScore;
         players.current[role].currentRoll++;
         const nextPlayerIndex = (role + 1) % players.current.length;
         if((currentRoll+1) % 2 === 0){
             setRole(nextPlayerIndex);
+            
+            if(currentRoll === 19 && (inputScore + players.current[role].rollsScore[currentRoll]) === 10){
+                setDisplayExtra(true);
+            }
+
         }else{
             if(Number(inputScore) === 10){
-                if(currentRoll === rollsScore.length - 2){
+                if(currentRoll >= rollsScore.length - 2){
+                    players.current[role].rollsScore[currentRoll] = inputScore;
+                    players.current[role].currentRoll++;
+
+                    if(currentRoll === 20){
+                        setRole(nextPlayerIndex);
+                    }
 
                     return;
                 }
@@ -102,10 +121,16 @@ function Game(){
                 <table>
                     <tbody>
                         {playerScoreSheet}
+                        <tr className={displayExtra ? "display" : ""}>
+                            <th>Extra</th>
+                            <td></td>
+                            <td></td>
+                        </tr>
                     </tbody>
                 </table>
                 <div className="extra-rolls">
-                    
+                    <span></span>
+                    <span></span>
                 </div>
             </div>
 
