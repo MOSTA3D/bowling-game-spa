@@ -33,12 +33,16 @@ button{
   transition: $dtrans;
 }
 
-
 input{border: none; outline: none; padding: 10px;border-radius: $dborderrds;font-size: 12pt;}
 
 a{text-decoration: none; color: unset;}
 
 ul{list-style: none}
+
+table, td, th{
+  border: 2px solid #ddd;
+  border-collapse: collapse;
+}
 
 
 // App style
@@ -50,6 +54,7 @@ ul{list-style: none}
 
 // imports
 @import "./sass/register_player";
+@import "./sass//game";
 
 
 

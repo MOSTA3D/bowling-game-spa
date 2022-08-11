@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { addPlayers } from "../slices/playersSlice";
 
 function RegisterPlayers(){
-    const [players, setPlayers]:[never[]|string[], Dispatch<SetStateAction<never[]|string[]>>] = useState([] as string[]);
+    const [playersNames, setPlayersNames]:[never[]|string[], Dispatch<SetStateAction<never[]|string[]>>] = useState([] as string[]);
     const [playerName, setPlayerName] = useState("");
 
     const dispatch = useDispatch();
@@ -17,14 +17,14 @@ function RegisterPlayers(){
     }
 
     const handleAddPlayer = ():void=>{
-        if(players.includes(playerName)){
+        if(playersNames.includes(playerName)){
             return;
         }
-        setPlayers((ps)=>[...ps, playerName]);
+        setPlayersNames((ps)=>[...ps, playerName]);
     };
 
     const handlePlayerRemove = (e:any)=>{
-        setPlayers((oldPlayers)=>{
+        setPlayersNames((oldPlayers)=>{
             const tempArr = [...oldPlayers];
             tempArr.splice(Number(e.target.dataset.player), 1);
             return [...tempArr];
@@ -34,7 +34,7 @@ function RegisterPlayers(){
     // console.log(useSelector(state=>console.log(state)));
 
     const handleStartGame = ()=>{
-        dispatch(addPlayers(players));
+        dispatch(addPlayers(playersNames));
         navigatTo("/game");
     }
 
@@ -52,7 +52,7 @@ function RegisterPlayers(){
                 </div>
             </header>
             <ul>
-                {players.map((name, i)=>(
+                {playersNames.map((name, i)=>(
                     <li key={name}>
                         {name}
                         <button onClick={handlePlayerRemove} data-player={i}>X</button>

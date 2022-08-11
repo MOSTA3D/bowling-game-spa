@@ -1,0 +1,36 @@
+div.game{
+    @include flex-box;
+    align-items: flex-start;
+    div.sheet{
+        padding: $dpadding;
+        background-color: #efefef;
+        table{
+            // background-color: #fff;
+            td, th{
+                width: 80px;
+                height: 40px;
+                text-align: center;
+                // padding: 5px;
+                
+                &.selected{
+                    background-color: rgb(227, 255, 227);
+                    box-shadow: 0 0 5px #0f0;
+                  
+                    input{
+                        padding: inherit;
+                        border-radius: unset;
+                        font-size: inherit;
+                        width: 100%;
+                        height: 100%;
+                        text-align: center;
+                    }
+                }
+            }
+        }
+    }
+    div.controller{
+        height: 130px;
+        @include flex-box(column);
+        padding: $dpadding;
+    }
+}

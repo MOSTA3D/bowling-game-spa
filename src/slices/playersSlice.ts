@@ -1,17 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 import playersReducer from "../reducers/playersReducer";
 
-const initialState:string[] = [];
+const initialState = {
+    value: [] as string[]
+};
 
 export const playersSlice = createSlice({
     name: "player",
     initialState,
     reducers: {
         addPlayers:(state, action)=>{
-            state.concat(action.payload);
+            console.log("addPlayers triggered..");
+            const tempArr = [...state.value, ...action.payload];
+            console.log(tempArr);
+            state.value = tempArr;
+            console.log(state);
         },
         clearPlayers: (state)=>{
-            state = [] as string[];
+            state.value = [] as string[];
         }
     }
 })
