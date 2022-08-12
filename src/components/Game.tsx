@@ -1,23 +1,11 @@
 import { useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
+import { fetchResults } from "../slices/winnerSlice";
 
-class Player {
-    name:string;
-    rollsScore:number[] = [];
-    currentRoll:number;
-    extraRolls:number[] = []
+import { mapPlayers, Player } from "../utils/helper";
 
-    constructor(name:string){
-        this.name = name;
-        for(let i = 0; i < 22; i++){
-            this.rollsScore.push(-1);
-        }
-        this.currentRoll = 0;
-        for(let i = 0; i < 2;i++){
-            this.extraRolls.push();
-        }
-    }
-}
+
 
 function Game(){
     // use-states
@@ -30,29 +18,52 @@ function Game(){
     })) as Player[]);
     const [isSecondRoll, setIsSecondRoll] = useState(false);
     const [disableSubmit, setDisableSubmit] = useState(true);
-    const [displayExtra, setDisplayExtra] = useState(false);
 
+    // navigator
+    const navigatTo = useNavigate();
+
+    // redux
+    const dispatch = useDispatch();
+    useSelector((state)=>console.log(state));
+
+    // globally used
+    const playerScoreSheet = [];
+    const {rollsScore, currentRoll} = players.current[role];
+
+    // helper functions
+    function isLastPlayer(r:number):boolean{
+        return (r+1) % players.current.length === 0;
+    }
 
     // handlers
     const onInputScoreChange = (e:any)=>{
         const tgtVal = Number(e.target.value);
         const previousValue = Number(rollsScore[currentRoll-1]);
-        if(!isNaN(tgtVal) && tgtVal <= 10 && tgtVal >= 0){
-            if(((currentRoll + 1)%2 === 0 && (tgtVal + previousValue > 10))){
-                setDisableNext(true);
-            }else{
+
+        // validation
+        if(isNaN(tgtVal) || tgtVal > 10 || tgtVal < 0 || (((currentRoll + 1) % 2) === 0 && (tgtVal + previousValue) > 10)){
+            setDisableNext(true);
+        }else{
+            
+            const ifTen = rollsScore[18] + rollsScore[19];
+            if(currentRoll !== 20 && ifTen !== 10 ){
                 setDisableNext(false);
             }
-        }else{
-            setDisableNext(true);
+
+            // edgecase-1 : handle last roll
+            if(currentRoll === 19){
+                
+                if(tgtVal + previousValue === 10){
+                    setDisableNext(false);
+                    setDisableSubmit(true);
+                }else{
+                    setDisableNext(true);
+                    setDisableSubmit(false);
+                }
+            }
         }
 
-        if(tgtVal + players.current[role].rollsScore[currentRoll - 1] === 10){
-            setDisableNext(false);
-            setDisableSubmit(true);
-        }
-
-        setInputScore(tgtVal);
+        setInputScore(e.target.value);
     }
 
     const handleNextClick = ()=>{
@@ -60,57 +71,100 @@ function Game(){
             return;
         }
 
-        if(role === (players.current.length - 1) && currentRoll === (rollsScore.length - 2) && inputScore !== 10){
-            setDisableNext(true);
-            setDisableSubmit(false);
-        }
+        setInputScore(0);
 
-
-        players.current[role].rollsScore[currentRoll] = inputScore;
+        players.current[role].rollsScore[currentRoll] = Number(inputScore);
         players.current[role].currentRoll++;
         const nextPlayerIndex = (role + 1) % players.current.length;
+
+        // handle even cells
         if((currentRoll+1) % 2 === 0){
-            setRole(nextPlayerIndex);
-            
-            if(currentRoll === 19 && (inputScore + players.current[role].rollsScore[currentRoll]) === 10){
-                setDisplayExtra(true);
+
+            if(currentRoll === 19 && (players.current[role].rollsScore[currentRoll - 1] + Number(inputScore)) === 10 ){
+                players.current[role].isExtra = true;
+                setDisableNext(true);
+                setDisableSubmit(false);
+                // setIsSecondRoll(!isSecondRoll);
+                return;
             }
 
-        }else{
+            if(role === nextPlayerIndex){
+                setIsSecondRoll(!isSecondRoll);
+            }
+
+            setRole(nextPlayerIndex);
+            console.log("this is even");
+            
+        }
+        // handle odd cells
+        else{
+
+            // edgecase-1 : last extra cell
+            if((currentRoll + 1) === (players.current[role].isExtra ? 21 : 19) && isLastPlayer(role)){
+                console.log("last index")
+                console.log( (players.current[role].isExtra ? 21 : 19));
+                setDisableNext(true);
+                setDisableSubmit(false);
+                // return;
+            }
+
             if(Number(inputScore) === 10){
-                if(currentRoll >= rollsScore.length - 2){
-                    players.current[role].rollsScore[currentRoll] = inputScore;
-                    players.current[role].currentRoll++;
 
-                    if(currentRoll === 20){
-                        setRole(nextPlayerIndex);
-                    }
-
+                // edge case-1 : first extra cell
+                if(currentRoll === 20){
+                    setIsSecondRoll(!isSecondRoll);
                     return;
                 }
-                players.current[role].rollsScore[currentRoll + 1] = -1;
+
+                // normal behavior
+                players.current[role].rollsScore[currentRoll + 1] = 0;
                 players.current[role].currentRoll++;
-                setRole(nextPlayerIndex);
+                
+                // edgecase-2 : last-frame first-cell
+                if(currentRoll === 18){
+                    players.current[role].isExtra = true;
+                    setDisableNext(false);
+                    setDisableSubmit(true);
+                    setIsSecondRoll(!isSecondRoll);
+                    console.log("current roll = 18");
+                    return;
+                }
+
+                // normal behavior
+                if(currentRoll !== 20)
+                 setRole(nextPlayerIndex);
             }else{
                 setIsSecondRoll(!isSecondRoll);
             }
         }
     }
 
+    const handleSubmitClick = ()=>{
+        if(disableSubmit) return;
+
+        console.log("submit");
+
+        players.current[role].rollsScore[currentRoll] = Number(inputScore);
+
+        const mappedPlayers = mapPlayers(players.current);;
+
+        dispatch((fetchResults as any)(mappedPlayers));
+
+        navigatTo("/results");
+    }
+
+
     // init component
-    const playerScoreSheet = [];
-    const {rollsScore, currentRoll} = players.current[role];
     for(let i = 0; i < 20;i+=2){
         playerScoreSheet.push(
-            <tr>
+            <tr key={i}>
                 <th>Frame {(i+2)/2} </th>
-                {[0,1].map((el)=><td className={i+el === currentRoll ? "selected" : ""}>{(rollsScore[i+el]) === -1 ? undefined : rollsScore[i+el]} {i+el === currentRoll && <input type="text" value={inputScore} onChange={onInputScoreChange} /> } </td>)}
+                {[0,1].map((el)=><td key={el} className={i+el === currentRoll ? "selected" : ""}>{(rollsScore[i+el]) === 0 ? undefined : rollsScore[i+el]} {i+el === currentRoll && <input autoFocus type="text" value={inputScore} onChange={onInputScoreChange} /> } </td>)}
             </tr>
         )
     }
  
 
-    console.log(players.current[role]);
 
     return (
         <div className="game">
@@ -121,25 +175,31 @@ function Game(){
                 <table>
                     <tbody>
                         {playerScoreSheet}
-                        <tr className={displayExtra ? "display" : ""}>
+                        <tr className={!players.current[role].isExtra ? "hide" : ""}>
                             <th>Extra</th>
-                            <td></td>
-                            <td></td>
+                            {[20, 21].map(el=><td key={el} className={el === currentRoll ? "selected" : ""}>{(rollsScore[el]) === 0 ? undefined : rollsScore[el]} {el === currentRoll && <input autoFocus type="text" value={inputScore} onChange={onInputScoreChange} /> } </td>)}
                         </tr>
                     </tbody>
                 </table>
-                <div className="extra-rolls">
-                    <span></span>
-                    <span></span>
-                </div>
             </div>
 
             <div className="controller">
-                <button disabled = {disableNext} onClick={handleNextClick}> Next </button>
-                <button disabled = {disableSubmit}>Submit</button>
+                <button className = {disableNext ? "" : "green-button"} disabled = {disableNext} onClick={handleNextClick}> Next </button>
+                <button className = {disableSubmit ? "" : "red-button"} disabled = {disableSubmit} onClick={handleSubmitClick}>Submit</button>
             </div>
+
         </div>
     )
 }
 
 export default Game;
+
+
+
+
+// if(((currentRoll + 1)%2 === 0 && (tgtVal + previousValue > 10))){
+//     setDisableNext(true);
+// }else{
+//     setDisableNext(false);
+// }
+// }

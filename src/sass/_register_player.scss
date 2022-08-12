@@ -1,4 +1,6 @@
 div.register-players{
+    margin: 50px auto;
+    text-align: center;
     width: 300px;
     header{
         width: 100%;
@@ -31,9 +33,9 @@ div.register-players{
             }
         }
 
-        li:not(:last-of-type){
-            border-bottom: 1px solid #f00;
-        }
+        // li:not(:last-of-type){
+        //     border-bottom: 1px solid #f00;
+        // }
         li:nth-child(even){
             background-color: #eee;
         }
@@ -41,4 +43,8 @@ div.register-players{
             border-radius: 0 0 $dborderrds $dborderrds;
         }
     }
+
+    // .register-controls{
+
+    // }
 }

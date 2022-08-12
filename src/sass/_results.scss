@@ -1,0 +1,36 @@
+div.results{
+    @include flex-box;
+
+    main{
+        text-align: center;
+        flex: 1;
+
+        h1:first-of-type{
+            font-size: 5em;
+            text-decoration: underline;
+        }
+
+        span.winner-name{
+            font-size: 2em;
+            color: $nd-accent-color;
+        }
+        
+    }
+
+    aside{
+        width: 300px;
+        background-color: #777;
+        height: 100vh;
+        color: #eee;
+
+        li{
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+
+            &:nth-of-type(odd){
+                background-color: #999;
+            }
+        }
+    }
+}

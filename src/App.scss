@@ -3,6 +3,8 @@ $font-color: #444;
 $dtrans: all 0.2s ease;
 $dpadding: 20px;
 $dborderrds: 7px;
+$accent-color: rgb(76, 203, 76);
+$nd-accent-color: rgb(201, 102, 75);
 
 // mixins
 @mixin flex-box($direction: row, $jstfy: space-between, $align: center){
@@ -23,12 +25,12 @@ button{
   min-width: 80px;
   outline: none;
   border: none;
+  color: #ddd;
   padding: 0.5em;
   text-align: center;
   border-radius: $dborderrds;
   font-size: 13pt;
   font-weight: bold;
-  color: $font-color;
   cursor: pointer;
   transition: $dtrans;
 }
@@ -48,13 +50,44 @@ table, td, th{
 // App style
 
 .App{
-  @include flex-box(column);
-  margin-top: 50px;
+  text-align: center;
+  color: $font-color;
+
+  > h1{
+    font-size: 3em;
+
+    span{
+      color: $nd-accent-color;
+    }
+  }
+
+  > h3 span{
+      color: $nd-accent-color;
+      font-size: 1.3em;
+  }
+}
+
+.green-button{
+  background-color: $accent-color;
+  &:hover{
+      background-color: #eee;
+      color: $accent-color;
+  }
+}
+
+.red-button{
+  background-color: $nd-accent-color;
+
+  &:hover{
+      background-color: #eee;
+      color: $nd-accent-color;
+  }
 }
 
 // imports
 @import "./sass/register_player";
 @import "./sass//game";
+@import "./sass/results";
 
 
 

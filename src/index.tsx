@@ -4,22 +4,16 @@ import './index.css';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { store } from './store';
 
 
-import playersReducer from './slices/playersSlice';
-import combinedReducers from "./reducers";
 import { BrowserRouter } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-const store = configureStore({
-  reducer: {
-    players: playersReducer
-  }
-});
+
 
 root.render(
   <Provider store={store}>

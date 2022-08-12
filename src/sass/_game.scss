@@ -1,13 +1,16 @@
 div.game{
+    margin: 50px auto;
+    width: 450px;
     @include flex-box;
     align-items: flex-start;
     div.sheet{
         padding: $dpadding;
         background-color: #efefef;
+        border-radius: 3px;
         table{
             // background-color: #fff;
             td, th{
-                width: 80px;
+                width: 100px;
                 height: 40px;
                 text-align: center;
                 // padding: 5px;
@@ -25,6 +28,10 @@ div.game{
                         text-align: center;
                     }
                 }
+            }
+
+            tr.hide{
+                display: none;
             }
         }
     }

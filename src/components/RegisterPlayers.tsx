@@ -39,27 +39,33 @@ function RegisterPlayers(){
     }
 
     return(
-        <div className="register-players">
-            <header className="register-header">
-                <input type="text" name="player-name" value={playerName} onChange={handlePlayerNameChange} placeholder="Enter Player Name"/>
-                <div className="register-controls">
-                    <button onClick = {handleAddPlayer} className="add-player">
-                        Add Player
-                    </button>
-                    <button className="start-game" onClick={handleStartGame}>
-                        Start
-                    </button>
-                </div>
-            </header>
-            <ul>
-                {playersNames.map((name, i)=>(
-                    <li key={name}>
-                        {name}
-                        <button onClick={handlePlayerRemove} data-player={i}>X</button>
-                    </li>
-                ))}
-            </ul>
-        </div>
+        <>
+            <br/>
+            <h1 className="main-title"> Why To Use A Sheet When YOU Have <span>MBC</span> {";{)"} </h1><br/>
+            <h3><span>M</span>ighty <span>B</span>owling-Score <span>C</span>alculator</h3>
+
+            <div className="register-players">
+                <header className="register-header">
+                    <input type="text" name="player-name" value={playerName} onChange={handlePlayerNameChange} placeholder="Enter Player Name"/>
+                    <div className="register-controls">
+                        <button onClick = {handleAddPlayer} className="red-button">
+                            Add Player
+                        </button>
+                        <button disabled={playersNames.length === 0} className={playersNames.length === 0 ? "" : "green-button"} onClick={handleStartGame}>
+                            Start
+                        </button>
+                    </div>
+                </header>
+                <ul>
+                    {playersNames.map((name, i)=>(
+                        <li key={name}>
+                            {name}
+                            <button onClick={handlePlayerRemove} data-player={i}>X</button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </>
     );
 }
 
