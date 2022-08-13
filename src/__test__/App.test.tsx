@@ -48,10 +48,10 @@ describe("testing playerReducer reducers", ()=>{
 
 // this fails : i don't gurantee the stability of the internet so i will push now and thinking about it after.
 describe("testing resultsReducer", ()=>{
-  it("expects getting player results with fetchResults action", ()=>{
+  it("expects getting player results with fetchResults action", async ()=>{
     const mappedPlayers = mapPlayers(players);
     // console.log(mappedPlayers);
-    const newState = resultReducer((store.getState as any).playerResults, (fetchResults as any)(mappedPlayers));
+    const newState = resultReducer((store.getState as any).playerResults, await (fetchResults as any)(mappedPlayers));
     console.log("the thing is " , newState);
     expect(newState.value.length).toEqual(players.length);
   })

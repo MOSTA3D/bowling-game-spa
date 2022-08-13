@@ -1,11 +1,15 @@
 import { useSelector } from "react-redux";
 import { IPlayerResult } from "../utils/helper";
 
+import Error from "./Error";
+
 function Results(){
-    const players = [...useSelector((state)=>(state as any).playerResults.value as IPlayerResult[])];
+    const playerResults = useSelector((state)=>(state as any).playerResults.value as IPlayerResult[]);
+    const players = playerResults ? [...playerResults] : [];
     const winner = players.shift() as IPlayerResult;
     return (
-        <div className="results">
+         (
+            <div className="results">
             <main className="winner">
                 <h1>Results</h1>
                 <br/><br/>
@@ -26,6 +30,8 @@ function Results(){
                 </ul>
             </aside>
         </div>
+        )
+        
     )
 }
 

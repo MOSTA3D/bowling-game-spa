@@ -28,7 +28,10 @@ export const resultsSlice = createSlice({
     extraReducers: {
         [fetchResults.fulfilled as any] : (state, action)=>{
             state.value = action.payload;
-        }
+        },
+        // [fetchResults.rejected as any] : (state, action)=>{
+        //     state.value = [];
+        // }
     }
 });
 

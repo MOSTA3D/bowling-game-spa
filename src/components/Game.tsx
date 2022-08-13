@@ -24,7 +24,6 @@ function Game(){
 
     // redux
     const dispatch = useDispatch();
-    useSelector((state)=>console.log(state));
 
     // globally used
     const playerScoreSheet = [];
@@ -97,7 +96,6 @@ function Game(){
             }
 
             setRole(nextPlayerIndex);
-            console.log("this is even");
             
         }
         // handle odd cells
@@ -105,8 +103,6 @@ function Game(){
 
             // edgecase-1 : last extra cell
             if((currentRoll + 1) === (players.current[role].isExtra ? 21 : 19) && isLastPlayer(role)){
-                console.log("last index")
-                console.log( (players.current[role].isExtra ? 21 : 19));
                 setDisableNext(true);
                 setDisableSubmit(false);
                 // return;
@@ -137,7 +133,6 @@ function Game(){
                     setDisableNext(false);
                     setDisableSubmit(true);
                     setIsSecondRoll(!isSecondRoll);
-                    console.log("current roll = 18");
                     return;
                 }
 
