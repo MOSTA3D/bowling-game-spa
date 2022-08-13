@@ -81,10 +81,14 @@ function Game(){
         if((currentRoll+1) % 2 === 0){
 
             if(currentRoll === 19 && (players.current[role].rollsScore[currentRoll - 1] + Number(inputScore)) === 10 ){
+
                 players.current[role].isExtra = true;
-                setDisableNext(true);
-                setDisableSubmit(false);
-                // setIsSecondRoll(!isSecondRoll);
+
+                if((role+1) % players.current.length === 0){
+                    setDisableNext(true);
+                    setDisableSubmit(false);
+                }
+               
                 return;
             }
 
@@ -108,10 +112,17 @@ function Game(){
                 // return;
             }
 
+            
+            if(rollsScore[currentRoll - 1] + rollsScore[currentRoll - 2] === 10 && !isLastPlayer(role)){
+                setRole(nextPlayerIndex);
+                return;
+            }
+
             if(Number(inputScore) === 10){
 
                 // edge case-1 : first extra cell
                 if(currentRoll === 20){
+
                     setIsSecondRoll(!isSecondRoll);
                     return;
                 }
@@ -193,13 +204,3 @@ function Game(){
 }
 
 export default Game;
-
-
-
-
-// if(((currentRoll + 1)%2 === 0 && (tgtVal + previousValue > 10))){
-//     setDisableNext(true);
-// }else{
-//     setDisableNext(false);
-// }
-// }
