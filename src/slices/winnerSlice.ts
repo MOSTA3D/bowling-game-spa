@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import playersReducer from "../reducers/playersReducer";
 import { SERVER } from "../utils/config";
-import { FetchFacad } from "../utils/helper";
+import { FetchFacad, Err } from "../utils/helper";
 
 interface PlayerResult{
     name:string;
@@ -19,7 +19,7 @@ export const fetchResults = createAsyncThunk("playerReults/fetchResults", async 
     // why try doesn't work here !!!!!
     const fetchFacad = FetchFacad.getFetchFacad();
     const data = await fetchFacad.postData(SERVER, players);
-    return data;
+    return (data as Err).message ? [] : data;
 });
 
 
@@ -29,12 +29,9 @@ export const resultsSlice = createSlice({
     reducers:{},
     extraReducers: {
         [fetchResults.fulfilled as any] : (state, action)=>{
-            state.value = action.payload.length ? action.payload : [];
+            state.value = action.payload;
            
-        },
-        // [fetchResults.rejected as any] : (state, action)=>{
-        //     state.value = [];
-        // }
+        }
     }
 });
 
