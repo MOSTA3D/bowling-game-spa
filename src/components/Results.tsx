@@ -6,9 +6,10 @@ import Error from "./Error";
 function Results(){
     const playerResults = useSelector((state)=>(state as any).playerResults.value as IPlayerResult[]);
     const players = playerResults ? [...playerResults] : [];
+    console.log("the palyer results are " , playerResults);
     const winner = players.shift() as IPlayerResult;
     return (
-         (
+        players.length ? (
             <div className="results">
             <main className="winner">
                 <h1>Results</h1>
@@ -30,6 +31,8 @@ function Results(){
                 </ul>
             </aside>
         </div>
+        ):(
+            <Error />
         )
         
     )

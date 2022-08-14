@@ -15,6 +15,8 @@ const initialState = {
 
 export const fetchResults = createAsyncThunk("playerReults/fetchResults", async function(players){
     console.log("from fetch results");
+
+    // why try doesn't work here !!!!!
     const fetchFacad = FetchFacad.getFetchFacad();
     const data = await fetchFacad.postData(SERVER, players);
     return data;
@@ -27,7 +29,8 @@ export const resultsSlice = createSlice({
     reducers:{},
     extraReducers: {
         [fetchResults.fulfilled as any] : (state, action)=>{
-            state.value = action.payload;
+            state.value = action.payload.length ? action.payload : [];
+           
         },
         // [fetchResults.rejected as any] : (state, action)=>{
         //     state.value = [];
