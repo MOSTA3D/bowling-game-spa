@@ -5,8 +5,11 @@ import { Routes, Route, Navigate } from 'react-router';
 import NotFound from "./NotFound";
 import Game from './Game';
 import Results from './Results';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from "react-redux";
 import { FetchFacad } from '../utils/helper';
 import { SERVER } from '../utils/config';
+import store from "../store";
 
 
 // (async function(){
@@ -17,13 +20,19 @@ import { SERVER } from '../utils/config';
 function App() {
   return (
     <div className="App">
-      <Routes>
-        <Route path="/" element={<Navigate to="/register" />} />
-        <Route path="/register" element={<RegisterPlayers />} />
-        <Route path="/game" element={<Game />} />
-        <Route path="/results" element={<Results />} />
-        <Route path="*" element={<NotFound/>} />
-      </Routes>
+      <Provider store={store}>
+        <BrowserRouter>
+          <React.StrictMode>
+            <Routes>
+              <Route path="/" element={<Navigate to="/register" />} />
+              <Route path="/register" element={<RegisterPlayers />} />
+              <Route path="/game" element={<Game />} />
+              <Route path="/results" element={<Results />} />
+              <Route path="*" element={<NotFound/>} />
+            </Routes>
+          </React.StrictMode>
+        </BrowserRouter>
+      </Provider>
     </div>
   );
 }

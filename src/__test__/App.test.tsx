@@ -1,7 +1,7 @@
 // import React from 'react';
 // import { queryByAttribute, render, screen } from '@testing-library/react';
 // import App from '../components/App';
-import { store } from '../store';
+import store from '../store';
 
 import playerReducer, {addPlayers, clearPlayers} from "../slices/playersSlice";
 import { mapPlayers, Player } from '../utils/helper';
@@ -46,7 +46,7 @@ describe("testing playerReducer reducers", ()=>{
 
 
 
-// this fails : i don't gurantee the stability of the internet so i will push now and thinking about it after.
+// this fails : i don't gurantee the stability of the internet so i will push now and thinking about it later.
 describe("testing resultsReducer", ()=>{
   it("expects getting player results with fetchResults action", async ()=>{
     const mappedPlayers = mapPlayers(players);
