@@ -17,6 +17,7 @@ export const fetchResults = createAsyncThunk("playerReults/fetchResults", async 
     console.log("from fetch results");
 
     // why try doesn't work here !!!!!
+    
     const fetchFacad = FetchFacad.getFetchFacad();
     const data = await fetchFacad.postData(SERVER, players);
     return data;

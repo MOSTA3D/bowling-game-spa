@@ -6,10 +6,27 @@ import { fetchResults } from "../slices/winnerSlice";
 import { mapPlayers, Player } from "../utils/helper";
 
 
+// ***************************************************
+// ***************************************************
+// ******* I know this code may be the worst you can
+// ******* see in this life, and may be in the other
+// ******* life too, so, leave a comment of how to 
+// ******* improve it, thanks
+// ***************************************************
+// ***************************************************
 
 function Game(){
+    // navigator
+    const navigatTo = useNavigate();
+
     // use-states
     const playerNames = useSelector((state:{players:{value:string[]}})=>state.players.value as string[]);
+
+    if(!playerNames){
+        console.log("here " );
+        navigatTo("/register");
+    }
+
     const [inputScore, setInputScore] = useState(0);
     const [role, setRole] = useState(0);
     const [disableNext, setDisableNext] = useState(false);
@@ -19,8 +36,6 @@ function Game(){
     const [isSecondRoll, setIsSecondRoll] = useState(false);
     const [disableSubmit, setDisableSubmit] = useState(true);
 
-    // navigator
-    const navigatTo = useNavigate();
 
     // redux
     const dispatch = useDispatch();
@@ -40,19 +55,22 @@ function Game(){
         const previousValue = Number(rollsScore[currentRoll-1]);
 
         // validation
-        if(isNaN(tgtVal) || tgtVal > 10 || tgtVal < 0 || (((currentRoll + 1) % 2) === 0 && (tgtVal + previousValue) > 10)){
+        if(isNaN(tgtVal) || tgtVal > 10 || tgtVal < 0 || (((currentRoll + 1) % 2) === 0 && (tgtVal + previousValue) > 10 && currentRoll !== 21)){
             setDisableNext(true);
         }else{
-            
+            setDisableNext(false);
+
+            // probably i should remove this, what is your opinion ??
             const ifTen = rollsScore[18] + rollsScore[19];
             if(currentRoll !== 20 && ifTen !== 10 ){
                 setDisableNext(false);
             }
 
-            // edgecase-1 : handle last roll
+            // edgecase-1 : handle 19th roll
             if(currentRoll === 19){
-                
                 if(tgtVal + previousValue === 10){
+                    // strike at 19th roll
+
                     setDisableNext(false);
                     setDisableSubmit(true);
                 }else{
@@ -72,14 +90,16 @@ function Game(){
 
         setInputScore(0);
 
-        players.current[role].rollsScore[currentRoll] = Number(inputScore);
+        const numberInputScore = Number(inputScore);
+
+        players.current[role].rollsScore[currentRoll] = numberInputScore;
         players.current[role].currentRoll++;
         const nextPlayerIndex = (role + 1) % players.current.length;
 
         // handle even cells
         if((currentRoll+1) % 2 === 0){
 
-            if(currentRoll === 19 && (players.current[role].rollsScore[currentRoll - 1] + Number(inputScore)) === 10 ){
+            if(currentRoll === 19 && (players.current[role].rollsScore[currentRoll - 1] + numberInputScore) === 10 ){
 
                 players.current[role].isExtra = true;
 
@@ -108,13 +128,12 @@ function Game(){
                 // return;
             }
 
-            
-            if(rollsScore[currentRoll - 1] + rollsScore[currentRoll - 2] === 10 && !isLastPlayer(role)){
-                setRole(nextPlayerIndex);
-                return;
-            }
+            // if(rollsScore[currentRoll - 1] + rollsScore[currentRoll - 2] === 10 && !isLastPlayer(role)){
+            //     setRole(nextPlayerIndex);
+            //     return;
+            // }
 
-            if(Number(inputScore) === 10){
+            if(numberInputScore === 10){
 
                 // edge case-1 : first extra cell
                 if(currentRoll === 20){
@@ -152,6 +171,7 @@ function Game(){
 
         players.current[role].rollsScore[currentRoll] = Number(inputScore);
 
+        // mapping players array to a map with player name as the key
         const mappedPlayers = mapPlayers(players.current);;
 
         dispatch((fetchResults as any)(mappedPlayers));
@@ -173,28 +193,30 @@ function Game(){
 
 
     return (
-        <div className="game">
+        playerNames && (
+            <div className="game">
 
-            <div className="sheet">
-                <h2>Player: {players.current[role].name}</h2>
-                <br/>
-                <table>
-                    <tbody>
-                        {playerScoreSheet}
-                        <tr className={!players.current[role].isExtra ? "hide" : ""}>
-                            <th>Extra</th>
-                            {[20, 21].map(el=><td key={el} className={el === currentRoll ? "selected" : ""}>{(rollsScore[el]) === 0 ? undefined : rollsScore[el]} {el === currentRoll && <input autoFocus type="text" value={inputScore} onChange={onInputScoreChange} /> } </td>)}
-                        </tr>
-                    </tbody>
-                </table>
+                <div className="sheet">
+                    <h2>Player: {players.current[role].name}</h2>
+                    <br/>
+                    <table>
+                        <tbody>
+                            {playerScoreSheet}
+                            <tr className={!players.current[role].isExtra ? "hide" : ""}>
+                                <th>Extra</th>
+                                {[20, 21].map(el=><td key={el} className={el === currentRoll ? "selected" : ""}>{(rollsScore[el]) === 0 ? undefined : rollsScore[el]} {el === currentRoll && <input autoFocus type="text" value={inputScore} onChange={onInputScoreChange} /> } </td>)}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div className="controller">
+                    <button className = {disableNext ? "" : "green-button"} disabled = {disableNext} onClick={handleNextClick}> Next </button>
+                    <button className = {disableSubmit ? "" : "red-button"} disabled = {disableSubmit} onClick={handleSubmitClick}>Submit</button>
+                </div>
+
             </div>
-
-            <div className="controller">
-                <button className = {disableNext ? "" : "green-button"} disabled = {disableNext} onClick={handleNextClick}> Next </button>
-                <button className = {disableSubmit ? "" : "red-button"} disabled = {disableSubmit} onClick={handleSubmitClick}>Submit</button>
-            </div>
-
-        </div>
+        )
     )
 }
 
